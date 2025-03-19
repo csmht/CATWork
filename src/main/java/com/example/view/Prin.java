@@ -1,3 +1,5 @@
+package com.example.view;
+
 import java.util.Scanner;
 
 public class Prin {

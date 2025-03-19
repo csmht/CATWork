@@ -1,3 +1,5 @@
+package com.example.controller;
+
 import java.sql.*;
 
 public class JDBC {
@@ -56,8 +58,8 @@ public class JDBC {
     public static ResultSet find(String where,Object...values) throws SQLException {
             Connection conn = Pool.getPool();
             ResultSet rs = null;
-        StringBuilder sql = new StringBuilder("SELECT * FROM `").append(where).append("` WHERE ");
-
+        StringBuilder sql = new StringBuilder("SELECT * FROM `").append(where);
+            if(values.length>0){sql.append("` WHERE ")}
             for(int i=0;i<values.length;i+=2) {
                 if(i>0){
                     sql.append(" AND ");

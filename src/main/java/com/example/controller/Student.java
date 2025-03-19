@@ -1,3 +1,7 @@
+package com.example.controller;
+
+import com.example.view.Prin;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -71,5 +75,52 @@ public class Student {
 
     }
 
+    public static Boolean StudentMenu() throws SQLException {
+        Scanner sc = new Scanner(System.in);
+        int n = 0;
+        Prin.StudentMenu();
+        try {
+            n = sc.nextInt();
+            System.out.print("\033[H\033[2J");
+            if (n == 1) {
+                ResultSet rs = JDBC.find("keshi");
+                while(rs.next()){
+                    String name = rs.getString("douctor");
+                    String keshi = rs.getString("name");
+                    System.out.println("科室：" + keshi + "医生：" + name);
+                }
+            } else if (n == 2) {
+                System.out.println("请输入要挂号的科室：");
+                String keshi = sc.nextLine();
+                ResultSet rs = JDBC.find("keshi","name",keshi);
+                while(rs.next()){
+                    String name = rs.getString("douctor");
+                    System.out.println("科室：" + keshi + "    医生：" + name);
+                }
+                System.out.println("请输入要挂号的医生：");
+                String name = sc.nextLine();
+                rs = JDBC.find("douctortime","name",name);
+                while(rs.next()){
+                    String statime = rs.getString("statime");
+                    String endtime = rs.getString("endtime");
+                    System.out.println("医生："+ name +"   开始时间："+ statime +"  结束时间" + endtime);
+                }
+                System.out.println("请输入要挂号的时间：");
+                String statime = sc.nextLine();
+                JDBC.add("studentdouctor","id",Student.id,"name",name,"statime",statime);
+                System.out.println("挂号成功");
+            } else if (n == 3) {
 
+            } else if (n == 4) {
+
+            } else if (n == 5) {
+                return false;
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return true;
+    }
 }

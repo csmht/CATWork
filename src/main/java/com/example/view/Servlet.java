@@ -1,9 +1,13 @@
-import java.util.InputMismatchException;
+package com.example.view;
+
+import com.example.controller.GuanLi;
+import com.example.controller.Student;
+
 import java.util.Scanner;
 
 public class Servlet {
     public static void main(String[] args) {
-        int n;
+        int n = 0;
 
         Scanner sc = new Scanner(System.in);
         boolean flag = true;
@@ -30,6 +34,29 @@ public class Servlet {
                 throw new RuntimeException(e);
             }
         }
+        flag = true;
+        try {
+            while(flag){
+                if(n==1){
+                    flag =
+                }if(n==2){
+
+                }else {
+                    return;
+                }
+            }
+
+
+        }catch (){
+
+        }
+
+
+
+
+
+
+
         return  ;
     }
 }

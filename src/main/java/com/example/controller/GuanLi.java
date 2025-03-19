@@ -1,3 +1,7 @@
+package com.example.controller;
+
+import com.example.view.Prin;
+
 import java.util.Scanner;
 
 public class GuanLi {
