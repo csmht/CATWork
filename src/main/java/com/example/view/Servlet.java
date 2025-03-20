@@ -3,6 +3,7 @@ package com.example.view;
 import com.example.controller.GuanLi;
 import com.example.controller.Student;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Servlet {
@@ -38,23 +39,19 @@ public class Servlet {
         try {
             while(flag){
                 if(n==1){
-                    flag =
-                }if(n==2){
+                    flag = Student.StudentMenu();
+                }else if(n==2){
 
                 }else {
                     return;
                 }
+                Prin.Stop();
             }
 
 
-        }catch (){
-
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-
-
-
-
-
 
 
         return  ;

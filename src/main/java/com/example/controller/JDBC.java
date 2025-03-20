@@ -1,16 +1,17 @@
 package com.example.controller;
 
 import java.sql.*;
+import java.util.List;
 
 public class JDBC {
 
-        public static int add(String where,Object... values) throws SQLException {//列+内容
+        public static int add(String where,String... values) throws SQLException {//列+内容
             Connection conn = Pool.getPool();
             Statement stmt = conn.createStatement();
             StringBuilder one = new StringBuilder("INSERT INTO `" + where + "` (");
             StringBuilder two = new StringBuilder(" VALUES (");
             for(int i=0;i<values.length;i=i+2) {
-                String value = values[i].toString();
+                String value = values[i];
                 if(i==values.length-2){
                     one.append(value).append(")");
                 }else{
@@ -19,19 +20,15 @@ public class JDBC {
                 }
             }
             for(int i=1;i<values.length;i=i+2) {
-                String value = null;
-                Time time =null;
-                if(values[i-1]=="time"){
-                    time =new Time(((Date) values[i]).getTime());
-                }else{
-                    value = (String) values[i];
-                }
+
+
                     if(i==values.length-1){
-                        two.append("'").append(value == null ? time : value).append("')");
+                        two.append("'").append(values[i]).append("')");
                     }else{
-                    two.append("'").append(value == null ? time : value).append("',");
+                    two.append("'").append(values[i]).append("',");
             }}
             String sql = one + two.toString();
+            Pool.returnConn(conn);
             return stmt.executeUpdate(sql);
         }
 
@@ -39,6 +36,7 @@ public class JDBC {
             Connection conn = Pool.getPool();
             Statement stmt = conn.createStatement();
             String sql = "DELETE FROM " + where +" WHERE '"+ list +"'='"+ id + "'";
+            Pool.returnConn(conn);
             return stmt.executeUpdate(sql);
         }
 
@@ -46,20 +44,22 @@ public class JDBC {
     public static int deleteDouctorTime(String Name,Time StaTime) throws SQLException {
         Connection conn = Pool.getPool();
         Statement stmt = conn.createStatement();
+        Pool.returnConn(conn);
         return stmt.executeUpdate("DELETE FROM douctortime WHERE name = '"+ Name +"'AND statime ='"+ StaTime + "'");
         }
 
     public static int deleteStudentDouctor(String id,String Name) throws SQLException {
         Connection conn = Pool.getPool();
         Statement stmt = conn.createStatement();
-        return stmt.executeUpdate("DELETE FROM studentdouctor WHERE id = '" + id + "'AND name='" + Name + "';");
+        Pool.returnConn(conn);
+        return stmt.executeUpdate("DELETE FROM studentdouctor WHERE id = '" + id + "'AND name='" + Name +"'");
         }
 
     public static ResultSet find(String where,Object...values) throws SQLException {
             Connection conn = Pool.getPool();
             ResultSet rs = null;
-        StringBuilder sql = new StringBuilder("SELECT * FROM `").append(where);
-            if(values.length>0){sql.append("` WHERE ")}
+        StringBuilder sql = new StringBuilder("SELECT * FROM `").append(where).append("`");
+            if(values.length>0){sql.append(" WHERE ");}
             for(int i=0;i<values.length;i+=2) {
                 if(i>0){
                     sql.append(" AND ");
@@ -78,7 +78,32 @@ public class JDBC {
                     }else {
                     pstmt.setObject(index,value.toString());
                     }
-                }return pstmt.executeQuery();
+                }
+        Pool.returnConn(conn);
+                return pstmt.executeQuery();
 
     }
+
+
+    public static ResultSet find(String main,List<String> where, String...values) throws SQLException {//where 链接表 主表链接列 连接表链接列
+        Connection conn = Pool.getPool();
+        ResultSet rs = null;
+        StringBuilder sql = new StringBuilder("SELECT * FROM `" + main + "` ");
+        for(int i=0;i<where.size();i+=3) {
+            sql.append("LEFT JOIN ").append(where.get(i)).append(" ON ").append(where.get(i+1)).append("=").append(where.get(i+2));
+        }
+        if(values.length>0){sql.append(" WHERE ");}
+        for(int i=0;i<values.length;i+=2) {
+            if(i>0){
+                sql.append(" AND ");
+
+            }sql.append(values[i]).append(" = ").append(values[i+1]);}
+
+        PreparedStatement pstmt = conn.prepareStatement(sql.toString());
+
+        Pool.returnConn(conn);
+        return pstmt.executeQuery();
+
+    }
+
 }

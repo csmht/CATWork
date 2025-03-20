@@ -30,7 +30,7 @@ public class Pool {
         }return connQ.removeFirst();
     }
 
-    public static void releaseConnection(Connection conn) {
+    public static void returnConn(Connection conn) {
         if (conn != null && connQ.size() < maxPool) {
             try {
                 if (!conn.isClosed()) {

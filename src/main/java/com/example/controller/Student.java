@@ -4,6 +4,13 @@ import com.example.view.Prin;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Student {
@@ -82,41 +89,129 @@ public class Student {
         try {
             n = sc.nextInt();
             System.out.print("\033[H\033[2J");
-            if (n == 1) {
+            if (n == 1) {//看医生
                 ResultSet rs = JDBC.find("keshi");
+                boolean flag = true;
                 while(rs.next()){
+                    flag = false;
                     String name = rs.getString("douctor");
                     String keshi = rs.getString("name");
-                    System.out.println("科室：" + keshi + "医生：" + name);
+                    System.out.println("科室：" + keshi + "    医生：" + name);
                 }
-            } else if (n == 2) {
+                if(flag){
+                    System.out.println("没有科室信息");
+                    Prin.Stop();
+                }
+            } else if (n == 2) {//挂号
+                try{
+                    sc.nextLine();
                 System.out.println("请输入要挂号的科室：");
                 String keshi = sc.nextLine();
-                ResultSet rs = JDBC.find("keshi","name",keshi);
-                while(rs.next()){
+                ResultSet rs = null;
+                try {
+                    rs = JDBC.find("keshi", "name", keshi);
+                } catch (SQLException e) {
+                    System.out.println("没有找到相关信息");
+                    Prin.Stop();
+                    return true;
+                }
+                while (rs.next()) {
                     String name = rs.getString("douctor");
                     System.out.println("科室：" + keshi + "    医生：" + name);
                 }
                 System.out.println("请输入要挂号的医生：");
                 String name = sc.nextLine();
-                rs = JDBC.find("douctortime","name",name);
-                while(rs.next()){
-                    String statime = rs.getString("statime");
-                    String endtime = rs.getString("endtime");
-                    System.out.println("医生："+ name +"   开始时间："+ statime +"  结束时间" + endtime);
+                try {
+                    rs = JDBC.find("douctortime", "name", name);
+                } catch (SQLException e) {
+                    System.out.println("没有找到相关信息");
+                    Prin.Stop();
+                    return true;
                 }
-                System.out.println("请输入要挂号的时间：");
-                String statime = sc.nextLine();
-                JDBC.add("studentdouctor","id",Student.id,"name",name,"statime",statime);
-                System.out.println("挂号成功");
-            } else if (n == 3) {
+                List<LocalTime> rstime = new ArrayList<>();
+                int i = 0;
+                while (rs.next()) {
+                    Time statime = rs.getTime("statime");
+                    Time endtime = rs.getTime("endtime");
+                    rstime.add(statime.toLocalTime());
+                    rstime.add(endtime.toLocalTime());
+                    System.out.println("医生：" + name + "   开始时间：" + statime.toString() + "  结束时间" + endtime.toString());
+                }
+                boolean op = true;
+                    String statime = "";
+                    String[] time = new String[2];
+                while (op) {//判断用户输入的时间是否正确
 
-            } else if (n == 4) {
+                    System.out.println("请输入要挂号的时间：格式为1111-01-01 01:01:01");
+                    statime = sc.nextLine();
+
+                    time = statime.split(" ");
+                    DateTimeFormatter formatterTIME = DateTimeFormatter.ofPattern("H:m:s");
+                    LocalTime usetime = LocalTime.parse(time[1], formatterTIME);
+
+                    boolean pd = false;
+                    for(int o = 0 ; o < rstime.size() ; o+=2) {
+                        pd = usetime.isAfter(rstime.get(o)) && usetime.isBefore(rstime.get(o + 1));
+                        if(pd){
+                            break;
+                        }
+                    }
+
+                    if (!pd) {
+                        System.out.println("没有这个时间：");
+                        continue;
+                    }op = false;
+                }
+                //处理时间字符串格式化
+                String date = TimeTran.tran2(statime);
+                DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_TIME;
+                String retime = rstime.getFirst().format(formatter);
+
+
+                
+
+                JDBC.add("studentdouctor", "id", Student.id, "name", name, "statime", retime ,"date",date);
+            } catch (SQLException e) {
+                    System.out.println("挂号失败");
+                    Prin.Stop();
+                    e.printStackTrace();
+                    return true;
+                }
+                System.out.println("挂号成功");
+            } else if (n == 3) {//取消挂号
+                List<String> sql = new ArrayList<String>();
+                sql.add("douctortime");
+                sql.add("studentdouctor.name");
+                sql.add("douctortime.name");
+                ResultSet rs = JDBC.find("studentdouctor",sql,"id",Student.id);
+                boolean pd = false;
+                while(rs.next()){
+                    pd = true;
+                    String name = rs.getString("name");
+                    String statime = rs.getString("date");
+
+                    System.out.println("名字："+ name +"   开始时间："+ statime );
+                }if(!pd){
+                    System.out.println("无挂号信息");
+                    return true;
+                }
+                sc.nextLine();
+                System.out.println("请输入要取消挂号的医生");
+                String name = sc.nextLine();
+
+
+                int a = JDBC.deleteStudentDouctor(Student.id,name);
+                if(a!=0){
+                    System.out.println("修改成功");
+                }else{
+                    System.out.println("修改失败");
+                }
+            } else if (n == 4) {//查看挂号
 
             } else if (n == 5) {
                 return false;
             }
-        }catch (Exception e) {
+        }catch (Exception | ClassFormatError e) {
             e.printStackTrace();
         }
 
