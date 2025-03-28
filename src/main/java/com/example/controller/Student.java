@@ -129,12 +129,16 @@ public class Student {
                     return true;
                 }
                 List<LocalTime> rstime = new ArrayList<>();
+                    List<Integer> idtime = new ArrayList<Integer>();
                 int i = 0;
+                int timeid = 0;
                 while (rs.next()) {
                     Time statime = rs.getTime("statime");
                     Time endtime = rs.getTime("endtime");
+                    int id = rs.getInt("timeid");
                     rstime.add(statime.toLocalTime());
                     rstime.add(endtime.toLocalTime());
+                    idtime.add(id);
                     System.out.println("医生：" + name + "   开始时间：" + statime.toString() + "  结束时间" + endtime.toString());
                 }
                 boolean op = true;
@@ -153,6 +157,7 @@ public class Student {
                     for(int o = 0 ; o < rstime.size() ; o+=2) {
                         pd = usetime.isAfter(rstime.get(o)) && usetime.isBefore(rstime.get(o + 1));
                         if(pd){
+                            timeid = idtime.get(o/2+1);
                             break;
                         }
                     }
@@ -170,7 +175,7 @@ public class Student {
 
                 
 
-                JDBC.add("studentdouctor", "id", Student.id, "name", name, "statime", retime ,"date",date);
+                JDBC.add("studentdouctor", "id", Student.id, "name", name, "statime", retime ,"date",date,"timeid",String.valueOf(timeid));
             } catch (SQLException e) {
                     System.out.println("挂号失败");
                     Prin.Stop();

@@ -35,7 +35,7 @@ public class JDBC {
         public static int delete(String where,String list,String id) throws SQLException {
             Connection conn = Pool.getPool();
             Statement stmt = conn.createStatement();
-            String sql = "DELETE FROM " + where +" WHERE '"+ list +"'='"+ id + "'";
+            String sql = "DELETE FROM " + where +" WHERE "+ list +"='"+ id + "'";
             Pool.returnConn(conn);
             return stmt.executeUpdate(sql);
         }
@@ -90,20 +90,47 @@ public class JDBC {
         ResultSet rs = null;
         StringBuilder sql = new StringBuilder("SELECT * FROM `" + main + "` ");
         for(int i=0;i<where.size();i+=3) {
-            sql.append("LEFT JOIN ").append(where.get(i)).append(" ON ").append(where.get(i+1)).append("=").append(where.get(i+2));
+            sql.append("LEFT JOIN ").append(where.get(i)).append(" ON ").append(where.get(i+1)).append("=").append(where.get(i+2)).append(" ");
         }
         if(values.length>0){sql.append(" WHERE ");}
         for(int i=0;i<values.length;i+=2) {
             if(i>0){
                 sql.append(" AND ");
-
-            }sql.append(values[i]).append(" = ").append(values[i+1]);}
-
+            }sql.append(values[i]).append(" = '").append(values[i+1]).append("'");}
         PreparedStatement pstmt = conn.prepareStatement(sql.toString());
-
         Pool.returnConn(conn);
         return pstmt.executeQuery();
+    }
 
+
+
+    public static int Edit(String where,String[] who,String...what) throws SQLException {
+            Connection conn = Pool.getPool();
+            ResultSet rs = null;
+            StringBuilder sql = new StringBuilder("UPDATE `" + where + "` SET ");
+
+            for(int i=0;i<what.length;i+=2) {
+                sql.append(what[i]).append(" = '").append(what[i+1]).append("' ");
+                if(i!=what.length-2){
+                    sql.append(" , ");
+                }
+            }
+
+            for(int i=0;i<who.length;i+=2) {
+                if(i==0){
+                    sql.append(" WHERE ");
+                }
+                sql.append(who[i]).append(" = ").append(who[i+1]);
+                if(i!=who.length-2){
+                    sql.append(" AND ");
+                }
+            }
+
+        PreparedStatement pstmt = conn.prepareStatement(sql.toString());
+            int count = pstmt.executeUpdate();
+            Pool.returnConn(conn);
+
+        return count;
     }
 
 }

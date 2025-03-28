@@ -41,7 +41,7 @@ public class Servlet {
                 if(n==1){
                     flag = Student.StudentMenu();
                 }else if(n==2){
-
+                    flag = GuanLi.GuanLiMenu();
                 }else {
                     return;
                 }
