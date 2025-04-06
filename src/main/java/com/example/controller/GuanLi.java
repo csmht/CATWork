@@ -332,7 +332,7 @@ public class GuanLi {
 
         while(rs.next()){
 
-            String txt ="科室： "+ rs.getString("keshi.name") +" 医生： "+rs.getString("name")+" 时间： "+rs.getString("date")+"\r\n";
+            String txt ="科室： "+ rs.getString("keshi.name") +" 医生： "+rs.getString("name")+" 时间： "+rs.getString("date")+"\n";
             try (FileOutputStream fos = new FileOutputStream(Name, true)) {
                 JDBC.delete("studentdouctor","timeid",rs.getString("studentdouctor.id"));
                 byte[] bytes = txt.getBytes();
