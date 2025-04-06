@@ -135,7 +135,7 @@ public class Student {
                 while (rs.next()) {
                     Time statime = rs.getTime("statime");
                     Time endtime = rs.getTime("endtime");
-                    int id = rs.getInt("timeid");
+                    int id = rs.getInt("id");
                     rstime.add(statime.toLocalTime());
                     rstime.add(endtime.toLocalTime());
                     idtime.add(id);
@@ -157,7 +157,7 @@ public class Student {
                     for(int o = 0 ; o < rstime.size() ; o+=2) {
                         pd = usetime.isAfter(rstime.get(o)) && usetime.isBefore(rstime.get(o + 1));
                         if(pd){
-                            timeid = idtime.get(o/2+1);
+                            timeid = idtime.get(o/2);
                             break;
                         }
                     }
@@ -169,8 +169,8 @@ public class Student {
                 }
                 //处理时间字符串格式化
                 String date = TimeTran.tran2(statime);
-                DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_TIME;
-                String retime = rstime.getFirst().format(formatter);
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                    String retime = rstime.get(0).format(formatter);
 
 
                 

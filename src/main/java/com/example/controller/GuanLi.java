@@ -2,12 +2,15 @@ package com.example.controller;
 
 import com.example.view.Prin;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -62,7 +65,7 @@ public class GuanLi {
         }else if(n == 6){
             flag = dateDouctorTime();
         }else if(n == 7){
-
+            flag = endDouctor();
         }else if(n == 8){
             flag = addStudent();
         }else if(n == 9){
@@ -284,4 +287,70 @@ public class GuanLi {
         return false;
     }
 
+
+    public static boolean endDouctor() throws SQLException {
+        ResultSet rs = JDBC.find("student");
+        while (rs.next()){
+            System.out.println("学号："+ rs.getString("id") +"     名字："+rs.getString("name"));
+        }
+        System.out.println("输入要查看/修改的学号：");
+        Scanner sc = new Scanner(System.in);
+        String id = sc.nextLine();
+        List<String> a = new ArrayList<>(Collections.emptyList());
+        a.add("douctortime");
+        a.add("studentdouctor.timeid");
+        a.add("douctortime.id");
+        rs = JDBC.find("studentdouctor",a,"studentdouctor.id",id);
+        int i = 1;
+        List<String> b = new ArrayList<>();
+        while(rs.next()){
+            System.out.println("id:" + i++ +"    医生："+ rs.getString("name") + "   时间：" + rs.getString("date"));
+            b.add(rs.getString("timeid"));
+        }
+        String[] bArray = b.toArray(new String[0]);
+        System.out.println("请输入已经完成的诊断id：");
+        int n = 9999;
+        while(n>i){
+            try{
+                n = sc.nextInt();
+                if(n>i){
+                    System.out.println("没有这个id");
+                }
+            }catch (Exception e) {
+                System.out.println("输入错误.......");
+            }
+        }
+
+        String c = b.get(n - 1);
+        List<String> d = new ArrayList<>(Collections.emptyList());
+        d.add("keshi");
+        d.add("studentdouctor.name");
+        d.add("keshi.douctor");
+        rs = JDBC.find("studentdouctor",d,"timeid",c,"id",id);
+        String Name = id+".txt";
+
+
+        while(rs.next()){
+
+            String txt ="科室： "+ rs.getString("keshi.name") +" 医生： "+rs.getString("name")+" 时间： "+rs.getString("date")+"\r\n";
+            try (FileOutputStream fos = new FileOutputStream(Name, true)) {
+                JDBC.delete("studentdouctor","timeid",rs.getString("studentdouctor.id"));
+                byte[] bytes = txt.getBytes();
+                fos.write(bytes);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+        return false;
+    }
+
+
 }
+
+
+
+

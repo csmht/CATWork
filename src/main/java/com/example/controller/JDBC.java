@@ -5,6 +5,7 @@ import java.util.List;
 
 public class JDBC {
 
+
         public static int add(String where,String... values) throws SQLException {//列+内容
             Connection conn = Pool.getPool();
             Statement stmt = conn.createStatement();
@@ -32,6 +33,7 @@ public class JDBC {
             return stmt.executeUpdate(sql);
         }
 
+
         public static int delete(String where,String list,String id) throws SQLException {
             Connection conn = Pool.getPool();
             Statement stmt = conn.createStatement();
@@ -41,6 +43,7 @@ public class JDBC {
         }
 
 
+
     public static int deleteDouctorTime(String Name,Time StaTime) throws SQLException {
         Connection conn = Pool.getPool();
         Statement stmt = conn.createStatement();
@@ -48,12 +51,14 @@ public class JDBC {
         return stmt.executeUpdate("DELETE FROM douctortime WHERE name = '"+ Name +"'AND statime ='"+ StaTime + "'");
         }
 
+
     public static int deleteStudentDouctor(String id,String Name) throws SQLException {
         Connection conn = Pool.getPool();
         Statement stmt = conn.createStatement();
         Pool.returnConn(conn);
         return stmt.executeUpdate("DELETE FROM studentdouctor WHERE id = '" + id + "'AND name='" + Name +"'");
         }
+
 
     public static ResultSet find(String where,Object...values) throws SQLException {
             Connection conn = Pool.getPool();
@@ -85,7 +90,7 @@ public class JDBC {
     }
 
 
-    public static ResultSet find(String main,List<String> where, String...values) throws SQLException {//where 链接表 主表链接列 连接表链接列
+  public static ResultSet find(String main,List<String> where, String...values) throws SQLException {//where 链接表 主表链接列 连接表链接列
         Connection conn = Pool.getPool();
         ResultSet rs = null;
         StringBuilder sql = new StringBuilder("SELECT * FROM `" + main + "` ");
