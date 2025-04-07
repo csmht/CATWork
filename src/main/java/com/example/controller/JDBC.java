@@ -34,10 +34,19 @@ public class JDBC {
         }
 
 
-        public static int delete(String where,String list,String id) throws SQLException {
+        public static int delete(String where,String...list) throws SQLException {
             Connection conn = Pool.getPool();
             Statement stmt = conn.createStatement();
-            String sql = "DELETE FROM " + where +" WHERE "+ list +"='"+ id + "'";
+            String a = " ";
+            for (int i = 0;i<list.length;i+=2){
+                a +=" " + list[i] + " = '" + list[i+1] + "' ";
+                if(i!=list.length-2){
+                    a += " AND ";
+                }
+            }
+
+
+            String sql = "DELETE FROM " + where +" WHERE " + a;
             Pool.returnConn(conn);
             return stmt.executeUpdate(sql);
         }

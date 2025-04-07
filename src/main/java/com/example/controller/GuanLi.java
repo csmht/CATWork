@@ -331,15 +331,17 @@ public class GuanLi {
 
 
         while(rs.next()){
-
-            String txt ="科室： "+ rs.getString("keshi.name") +" 医生： "+rs.getString("name")+" 时间： "+rs.getString("date")+"\n";
+            String keshi = rs.getString("keshi.name");
+            String name = rs.getString("name");
+            String date = rs.getString("date");
+            String txt ="科室： "+ keshi +" 医生： "+ name +" 时间： "+ date +"\n";
             try (FileOutputStream fos = new FileOutputStream(Name, true)) {
-                JDBC.delete("studentdouctor","timeid",rs.getString("studentdouctor.id"));
+                JDBC.delete("studentdouctor","timeid",rs.getString("timeid"),"id",id);
                 byte[] bytes = txt.getBytes();
                 fos.write(bytes);
 
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println(e);
             }
         }
 

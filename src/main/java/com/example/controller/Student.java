@@ -2,11 +2,10 @@ package com.example.controller;
 
 import com.example.view.Prin;
 
+import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -85,6 +84,7 @@ public class Student {
     public static Boolean StudentMenu() throws SQLException {
         Scanner sc = new Scanner(System.in);
         int n = 0;
+
         Prin.StudentMenu();
         try {
             n = sc.nextInt();
@@ -212,7 +212,8 @@ public class Student {
                     System.out.println("修改失败");
                 }
             } else if (n == 4) {//查看挂号
-
+                addStudent();
+                return true;
             } else if (n == 5) {
                 return false;
             }
@@ -223,4 +224,42 @@ public class Student {
 
         return true;
     }
+
+    public static boolean addStudent() throws SQLException, FileNotFoundException {
+        List<String> a = new ArrayList<>();
+        a.add("keshi");a.add("studentdouctor.name");a.add("keshi.douctor");
+        ResultSet rs = JDBC.find("studentdouctor",a,"id",Student.id);
+        int n = 0;
+        System.out.println("未完成:");
+        while (rs.next()) {
+            n++;
+            String name = "科室：" + rs.getString("keshi.name")+"   医生："+rs.getString("douctor") + "  时间：" + rs.getString("Date");
+            System.out.println(name);
+        }
+
+        System.out.println("历史：");
+        String name = Student.id + ".txt";
+        try(FileInputStream fis = new FileInputStream(name);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+
+
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            System.out.println("暂无历史挂号信息");
+            System.out.println(e);
+        }
+
+
+
+
+        return true;
+    }
 }
+
+
+
+
